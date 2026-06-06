@@ -80,6 +80,7 @@ temp/
 # Project specific
 /docs/work-summaries/
 /docs/diffs/
+/prompts/
 /all.txt
 diff.txt
 CHANGED_FILES.md
