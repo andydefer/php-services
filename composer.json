@@ -38,7 +38,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Andydefer\\PhpServices\\PhpServiceServiceProvider"
+                "AndyDefer\\PhpServices\\PhpServiceServiceProvider"
             ]
         }
     },
