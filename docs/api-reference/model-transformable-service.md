@@ -1,4 +1,3 @@
-```markdown
 # ModelTransformableService - Référence Technique
 
 ## Description
@@ -14,7 +13,7 @@ ModelTransformableInterface
 
 ## Rôle principal
 
-Assure la transformation type-safe entre les modèles Eloquent (qui n'implémentent pas `Transformable`) et les Data DTOs de l'architecture. Il extrait les attributs (avec leurs casts : JSON, array, enum, datetime) et les relations (en les transformant récursivement).
+Assure la transformation type-safe entre les modèles Eloquent (qui n'implémentent pas `Transformable`) et les Data DTOs de l'architecture. Il extrait les attributs (avec leurs casts : JSON, array, enum, datetime) et les relations (en les transformant récursivement via `NormalizerChain`).
 
 ## Détails
 
@@ -46,21 +45,20 @@ $userData = $service->toData($user, UserData::class);
 
 ---
 
-### `toDataCollection(Collection $models, string $dataClass): DataCollection`
+### `toDataCollection(Collection $models, string $collectionClass): AbstractTypedCollection`
 
 | Paramètre | Type | Description |
 |-----------|------|-------------|
 | `$models` | `Collection<int, Model>` | Collection de modèles Eloquent |
-| `$dataClass` | `class-string<AbstractData>` | Classe Data DTO cible |
+| `$collectionClass` | `class-string<AbstractTypedCollection>` | Classe de collection cible (doit étendre `AbstractTypedCollection`) |
 
-**Retourne :** `DataCollection` - Collection typée d'instances Data DTO
+**Retourne :** `AbstractTypedCollection` - Collection typée d'instances Data DTO
 
 **Exemple :**
 ```php
 $users = User::all();
-$usersData = $service->toDataCollection($users, UserData::class);
+$usersData = $service->toDataCollection($users, UserDataCollection::class);
 
-// Parcourir la collection
 foreach ($usersData as $userData) {
     echo $userData->name;
 }
@@ -73,42 +71,27 @@ foreach ($usersData as $userData) {
 ### Cas 1 : Conversion simple d'un modèle
 
 ```php
-<?php
-
-declare(strict_types=1);
-
-use AndyDefer\PhpServices\Services\ModelTransformableService;
-use App\Models\User;
-use App\Data\UserData;
-
 $service = new ModelTransformableService();
 $user = User::find(1);
-
 $userData = $service->toData($user, UserData::class);
-
-// Résultat : UserData avec id, name, email convertis
 ```
 
 ### Cas 2 : Conversion avec relations Eloquent
 
 ```php
-<?php
-
 $user = User::with('posts', 'profile')->find(1);
 $userData = $service->toData($user, UserData::class);
 
-// Les relations sont automatiquement converties en Data DTOs
+// Les relations chargées sont automatiquement converties
 // $userData->posts est une DataCollection de PostData
 // $userData->profile est une instance de ProfileData
 ```
 
-### Cas 3 : Conversion de collection avec filtrage
+### Cas 3 : Conversion de collection avec collection typée
 
 ```php
-<?php
-
 $activeUsers = User::where('status', 'active')->get();
-$usersData = $service->toDataCollection($activeUsers, UserData::class);
+$usersData = $service->toDataCollection($activeUsers, UserDataCollection::class);
 
 $adminUsers = $usersData->filter(fn($data) => $data->role === 'admin');
 ```
@@ -131,7 +114,6 @@ $adminUsers = $usersData->filter(fn($data) => $data->role === 'admin');
 ```php
 // config/app.php
 'providers' => [
-    // ...
     AndyDefer\PhpServices\PhpServiceServiceProvider::class,
 ];
 ```
@@ -163,43 +145,31 @@ final class ShowUserAction extends AbstractAction
 
 | Opération | Complexité | Notes |
 |-----------|------------|-------|
-| `toData()` | O(n) avec n = nombre d'attributs + relations | Chaque attribut est traité une fois |
-| `toDataCollection()` | O(n × m) avec n = nombre de modèles, m = attributs par modèle | Peut être lourd pour de grandes collections |
-| Transformation JSON | O(k) avec k = taille du JSON | `json_decode` est linéaire |
+| `toData()` | O(n) | n = nombre d'attributs + relations |
+| `toDataCollection()` | O(n × m) | n = nombre de modèles, m = attributs par modèle |
 
 **Recommandations :**
 - Utiliser `with()` pour charger les relations nécessaires (évite N+1)
 - Pour les collections > 1000 éléments, traiter par lots
-- Le cache des Data DTOs n'est pas géré par ce service
+- Définir des collections typées concrètes (ex: `UserDataCollection`)
 
 ---
 
 ## Compatibilité
 
-| Version | Support | Notes |
-|---------|---------|-------|
-| PHP 8.2+ | ✅ Complet | Requis par le package |
-| PHP 8.1 | ❌ Non | Non testé |
-| Laravel 10.x | ✅ Complet | Testé |
-| Laravel 11.x | ✅ Complet | Testé |
-| Laravel 12.x | ✅ Complet | Testé |
-| Laravel 13.x | ⚠️ Non testé | Devrait fonctionner |
+| Version | Support |
+|---------|---------|
+| PHP 8.2+ | ✅ Complet |
+| Laravel 10.x | ✅ Complet |
+| Laravel 11.x | ✅ Complet |
+| Laravel 12.x | ✅ Complet |
+| Laravel 13.x | ⚠️ Non testé |
 
 ---
 
 ## Exemple complet
 
 ```php
-<?php
-
-declare(strict_types=1);
-
-use AndyDefer\PhpServices\Services\ModelTransformableService;
-use App\Models\User;
-use App\Data\UserData;
-use App\Data\PostData;
-use App\Data\ProfileData;
-
 // 1. Définir le Data DTO
 final class UserData extends AbstractData
 {
@@ -208,26 +178,28 @@ final class UserData extends AbstractData
         public readonly string $name,
         public readonly string $email,
         public readonly ProfileData $profile,
-        public readonly DataCollection $posts,
+        public readonly PostDataCollection $posts,
     ) {}
 }
 
-// 2. Utiliser le service
+// 2. Définir la collection typée
+final class UserDataCollection extends DataCollection
+{
+    public function __construct()
+    {
+        parent::__construct(UserData::class);
+    }
+}
+
+// 3. Utiliser le service
 $service = new ModelTransformableService();
 
 $user = User::with('profile', 'posts')->find(1);
 $userData = $service->toData($user, UserData::class);
 
-// 3. Résultat
-echo $userData->name;           // 'John Doe'
-echo $userData->profile->bio;   // 'Developer'
-foreach ($userData->posts as $post) {
-    echo $post->title;
-}
-
-// 4. Collection
+// 4. Collection typée
 $users = User::where('active', true)->get();
-$usersData = $service->toDataCollection($users, UserData::class);
+$usersData = $service->toDataCollection($users, UserDataCollection::class);
 ```
 
 ---
@@ -235,7 +207,7 @@ $usersData = $service->toDataCollection($users, UserData::class);
 ## Voir aussi
 
 - `AbstractData` - Classe de base pour les Data DTOs
-- `StrictDataObject` - Objet pour les données JSON/array
 - `DataCollection` - Collection typée pour Data DTOs
-- `PhpServiceServiceProvider` - Service Provider pour l'intégration Laravel
-```
+- `RecordTransformableService` - Transformation modèle → Record
+- `PhpServiceServiceProvider` - Service Provider
+---
