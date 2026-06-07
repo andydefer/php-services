@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace AndyDefer\PhpServices\Services;
 
-use AndyDefer\DomainStructures\Abstracts\AbstractData;
+use AndyDefer\DomainStructures\Abstracts\AbstractRecord;
 use AndyDefer\DomainStructures\Abstracts\AbstractTypedCollection;
 use AndyDefer\DomainStructures\Normalizers\NormalizerChain;
-use AndyDefer\DomainStructures\Utils\StrictDataObject;
-use AndyDefer\PhpServices\Contracts\ModelTransformableInterface;
+use AndyDefer\PhpServices\Contracts\RecordTransformableInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
-final class ModelTransformableService implements ModelTransformableInterface
+final class RecordTransformableService implements RecordTransformableInterface
 {
-    public function toData(Model $model, string $dataClass): AbstractData
+    public function toRecord(Model $model, string $recordClass): AbstractRecord
     {
         $attributes = $this->extractAttributes($model);
         $relations = $this->extractRelations($model);
         $data = array_merge($attributes, $relations);
         $normalized = NormalizerChain::get()->normalize($data);
 
-        return $dataClass::from($normalized);
+        return $recordClass::from($normalized);
     }
 
-    public function toDataCollection(
+    public function toRecordCollection(
         Collection $models,
         string $collectionClass
     ): AbstractTypedCollection {
@@ -69,7 +68,7 @@ final class ModelTransformableService implements ModelTransformableInterface
         }
 
         if ($relationValue instanceof Model) {
-            return $this->toData($relationValue, $this->guessDataClass($relationValue));
+            return $this->toRecord($relationValue, $this->guessRecordClass($relationValue));
         }
 
         return $relationValue;
@@ -86,13 +85,17 @@ final class ModelTransformableService implements ModelTransformableInterface
                 return null;
             }
 
+            if (is_array($value)) {
+                return $value;
+            }
+
             $decoded = json_decode($value, true);
 
             if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
-                return StrictDataObject::from([]);
+                return [];
             }
 
-            return StrictDataObject::from($decoded);
+            return $decoded;
         }
 
         if ($model->hasCast($key, 'enum')) {
@@ -102,27 +105,27 @@ final class ModelTransformableService implements ModelTransformableInterface
         return $value;
     }
 
-    private function guessDataClass(Model $model): string
+    private function guessRecordClass(Model $model): string
     {
         $modelClass = get_class($model);
         $modelName = class_basename($modelClass);
 
-        $dataClass = str_replace('Models', 'Data', $modelClass).'Data';
+        $recordClass = str_replace('Models', 'Records', $modelClass).'Record';
 
-        if (class_exists($dataClass)) {
-            return $dataClass;
+        if (class_exists($recordClass)) {
+            return $recordClass;
         }
 
-        $fallbackClass = 'App\\Data\\'.$modelName.'Data';
+        $fallbackClass = 'App\\Records\\'.$modelName.'Record';
 
         if (class_exists($fallbackClass)) {
             return $fallbackClass;
         }
 
         throw new \RuntimeException(sprintf(
-            'Data class not found for model %s. Tried: %s and %s',
+            'Record class not found for model %s. Tried: %s and %s',
             $modelClass,
-            $dataClass,
+            $recordClass,
             $fallbackClass
         ));
     }

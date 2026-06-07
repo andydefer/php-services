@@ -12,6 +12,7 @@ coverage/
 *.html
 *.log
 
+
 # PHPStan
 phpstan.neon
 phpstan*.neon

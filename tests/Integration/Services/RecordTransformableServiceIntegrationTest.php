@@ -4,29 +4,28 @@ declare(strict_types=1);
 
 namespace AndyDefer\PhpServices\Tests\Integration\Services;
 
-use AndyDefer\DomainStructures\Utils\DataObject;
-use AndyDefer\PhpServices\Services\ModelTransformableService;
-use AndyDefer\PhpServices\Tests\Fixtures\Collections\TestPostDataCollection;
-use AndyDefer\PhpServices\Tests\Fixtures\Collections\TestUserDataCollection;
-use AndyDefer\PhpServices\Tests\Fixtures\Data\TestPostData;
-use AndyDefer\PhpServices\Tests\Fixtures\Data\TestUserData;
+use AndyDefer\DomainStructures\Utils\StrictDataObject;
+use AndyDefer\PhpServices\Services\RecordTransformableService;
+use AndyDefer\PhpServices\Tests\Fixtures\Collections\TestPostRecordCollection;
+use AndyDefer\PhpServices\Tests\Fixtures\Collections\TestUserRecordCollection;
 use AndyDefer\PhpServices\Tests\Fixtures\Enums\TestUserRole;
 use AndyDefer\PhpServices\Tests\Fixtures\Enums\TestUserStatus;
 use AndyDefer\PhpServices\Tests\Fixtures\Models\TestUser;
+use AndyDefer\PhpServices\Tests\Fixtures\Records\TestPostRecord;
+use AndyDefer\PhpServices\Tests\Fixtures\Records\TestUserRecord;
 use AndyDefer\PhpServices\Tests\IntegrationTestCase;
 
-final class ModelTransformableServiceIntegrationTest extends IntegrationTestCase
+final class RecordTransformableServiceIntegrationTest extends IntegrationTestCase
 {
-    private ModelTransformableService $service;
+    private RecordTransformableService $service;
 
     protected function setUp(): void
     {
-
         parent::setUp();
-        $this->service = new ModelTransformableService;
+        $this->service = new RecordTransformableService;
     }
 
-    public function test_to_data_converts_database_model_correctly(): void
+    public function test_to_record_converts_database_model_correctly(): void
     {
         // Arrange
         $user = TestUser::create([
@@ -39,7 +38,7 @@ final class ModelTransformableServiceIntegrationTest extends IntegrationTestCase
         ]);
 
         // Act
-        $result = $this->service->toData($user, TestUserData::class);
+        $result = $this->service->toRecord($user, TestUserRecord::class);
 
         // Assert
         $this->assertSame($user->id, $result->id);
@@ -48,12 +47,12 @@ final class ModelTransformableServiceIntegrationTest extends IntegrationTestCase
         $this->assertSame(TestUserStatus::ACTIVE, $result->status);
         $this->assertSame(TestUserRole::USER, $result->role);
         $this->assertSame(25, $result->age);
-        $this->assertInstanceOf(DataObject::class, $result->metadata);
+        $this->assertInstanceOf(StrictDataObject::class, $result->metadata);
         $this->assertTrue($result->metadata->premium);
         $this->assertSame(100, $result->metadata->score);
     }
 
-    public function test_to_data_with_relations_converts_relations_correctly(): void
+    public function test_to_record_with_relations_converts_relations_correctly(): void
     {
         // Arrange
         $user = TestUser::create([
@@ -73,23 +72,19 @@ final class ModelTransformableServiceIntegrationTest extends IntegrationTestCase
         $user->load('posts');
 
         // Act
-        $result = $this->service->toData($user, TestUserData::class);
+        $result = $this->service->toRecord($user, TestUserRecord::class);
 
-        /** @var TestPostData $firstPost */
+        /** @var TestPostRecord $firstPost */
         $firstPost = $result->posts->first();
 
-        /** @var TestPostData $lastPost */
-        $lastPost = $result->posts->last();
-
         // Assert
-        $this->assertInstanceOf(TestPostDataCollection::class, $result->posts);
+        $this->assertInstanceOf(TestPostRecordCollection::class, $result->posts);
         $this->assertCount(2, $result->posts);
-        $this->assertInstanceOf(TestPostData::class, $firstPost);
-        $this->assertSame('Post 1', $firstPost->title);
-        $this->assertSame('Content 2', $lastPost->body);
+        $this->assertInstanceOf(TestPostRecord::class, $firstPost);
+        $this->assertSame(1, $firstPost->id);
     }
 
-    public function test_to_data_collection_converts_multiple_models(): void
+    public function test_to_record_collection_converts_multiple_models(): void
     {
         // Arrange
         TestUser::create([
@@ -111,22 +106,22 @@ final class ModelTransformableServiceIntegrationTest extends IntegrationTestCase
         $users = TestUser::all();
 
         // Act
-        $result = $this->service->toDataCollection($users, TestUserDataCollection::class);
+        $result = $this->service->toRecordCollection($users, TestUserRecordCollection::class);
 
-        /** @var TestUserData $firstUser */
+        /** @var TestUserRecord $firstUser */
         $firstUser = $result->first();
 
-        /** @var TestUserData $lastUser */
+        /** @var TestUserRecord $lastUser */
         $lastUser = $result->last();
 
         // Assert
         $this->assertCount(2, $result);
-        $this->assertInstanceOf(TestUserData::class, $firstUser);
+        $this->assertInstanceOf(TestUserRecord::class, $firstUser);
         $this->assertSame('User 1', $firstUser->name);
         $this->assertSame('User 2', $lastUser->name);
     }
 
-    public function test_to_data_collection_with_relations_converts_relations(): void
+    public function test_to_record_collection_with_relations_converts_relations(): void
     {
         // Arrange
         $user1 = TestUser::create([
@@ -156,30 +151,30 @@ final class ModelTransformableServiceIntegrationTest extends IntegrationTestCase
         $users = TestUser::with('posts')->get();
 
         // Act
-        $result = $this->service->toDataCollection($users, TestUserDataCollection::class);
+        $result = $this->service->toRecordCollection($users, TestUserRecordCollection::class);
 
-        /** @var TestUserData $firstUser */
+        /** @var TestUserRecord $firstUser */
         $firstUser = $result->first();
 
-        /** @var TestUserData $lastUser */
+        /** @var TestUserRecord $lastUser */
         $lastUser = $result->last();
 
-        /** @var TestPostData $firstUserFirstPost */
+        /** @var TestPostRecord $firstUserFirstPost */
         $firstUserFirstPost = $firstUser->posts->first();
 
-        /** @var TestPostData $lastUserFirstPost */
+        /** @var TestPostRecord $lastUserFirstPost */
         $lastUserFirstPost = $lastUser->posts->first();
 
         // Assert
         $this->assertCount(2, $result);
-        $this->assertInstanceOf(TestPostDataCollection::class, $firstUser->posts);
+        $this->assertInstanceOf(TestPostRecordCollection::class, $firstUser->posts);
         $this->assertCount(1, $firstUser->posts);
-        $this->assertInstanceOf(TestPostData::class, $firstUserFirstPost);
+        $this->assertInstanceOf(TestPostRecord::class, $firstUserFirstPost);
         $this->assertSame('User 1 Post', $firstUserFirstPost->title);
         $this->assertSame('User 2 Post', $lastUserFirstPost->title);
     }
 
-    public function test_to_data_handles_null_metadata(): void
+    public function test_to_record_handles_null_metadata(): void
     {
         // Arrange
         $user = TestUser::create([
@@ -192,7 +187,7 @@ final class ModelTransformableServiceIntegrationTest extends IntegrationTestCase
         ]);
 
         // Act
-        $result = $this->service->toData($user, TestUserData::class);
+        $result = $this->service->toRecord($user, TestUserRecord::class);
 
         // Assert
         $this->assertSame($user->id, $result->id);

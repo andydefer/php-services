@@ -7,6 +7,7 @@ namespace AndyDefer\PhpServices\Tests\Fixtures\Models;
 use AndyDefer\PhpServices\Tests\Fixtures\Enums\TestUserRole;
 use AndyDefer\PhpServices\Tests\Fixtures\Enums\TestUserStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TestUser extends Model
 {
@@ -27,8 +28,8 @@ class TestUser extends Model
         'metadata' => 'array',
     ];
 
-    public function getFullNameAttribute(): string
+    public function posts(): HasMany
     {
-        return $this->name.' ('.$this->email.')';
+        return $this->hasMany(TestPost::class, 'user_id');
     }
 }

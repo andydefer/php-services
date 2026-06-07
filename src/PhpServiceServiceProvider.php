@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace AndyDefer\PhpServices;
 
 use AndyDefer\PhpServices\Contracts\ModelTransformableInterface;
+use AndyDefer\PhpServices\Contracts\RecordTransformableInterface;
 use AndyDefer\PhpServices\Services\ModelTransformableService;
+use AndyDefer\PhpServices\Services\RecordTransformableService;
 use Illuminate\Support\ServiceProvider;
 
 final class PhpServiceServiceProvider extends ServiceProvider
@@ -15,6 +17,11 @@ final class PhpServiceServiceProvider extends ServiceProvider
         $this->app->singleton(
             ModelTransformableInterface::class,
             ModelTransformableService::class
+        );
+
+        $this->app->singleton(
+            RecordTransformableInterface::class,
+            RecordTransformableService::class
         );
     }
 

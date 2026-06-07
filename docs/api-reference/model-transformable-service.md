@@ -1,3 +1,4 @@
+```markdown
 # ModelTransformableService - Référence Technique
 
 ## Description
@@ -15,7 +16,8 @@ ModelTransformableInterface
 
 Assure la transformation type-safe entre les modèles Eloquent (qui n'implémentent pas `Transformable`) et les Data DTOs de l'architecture. Il extrait les attributs (avec leurs casts : JSON, array, enum, datetime) et les relations (en les transformant récursivement).
 
-## DETAILS
+## Détails
+
 [Voir la classe ModelTransformableService](https://github.com/andydefer/php-services/blob/main/src/Services/ModelTransformableService.php)
 
 Le package s'enregistre automatiquement via Laravel auto-discovery.
@@ -44,19 +46,24 @@ $userData = $service->toData($user, UserData::class);
 
 ---
 
-### `toDataCollection(Collection $models, string $dataClass): array`
+### `toDataCollection(Collection $models, string $dataClass): DataCollection`
 
 | Paramètre | Type | Description |
 |-----------|------|-------------|
 | `$models` | `Collection<int, Model>` | Collection de modèles Eloquent |
 | `$dataClass` | `class-string<AbstractData>` | Classe Data DTO cible |
 
-**Retourne :** `array<int, AbstractData>` - Tableau d'instances Data DTO
+**Retourne :** `DataCollection` - Collection typée d'instances Data DTO
 
 **Exemple :**
 ```php
 $users = User::all();
 $usersData = $service->toDataCollection($users, UserData::class);
+
+// Parcourir la collection
+foreach ($usersData as $userData) {
+    echo $userData->name;
+}
 ```
 
 ---
@@ -91,7 +98,7 @@ $user = User::with('posts', 'profile')->find(1);
 $userData = $service->toData($user, UserData::class);
 
 // Les relations sont automatiquement converties en Data DTOs
-// $userData->posts est un array de PostData
+// $userData->posts est une DataCollection de PostData
 // $userData->profile est une instance de ProfileData
 ```
 
@@ -103,7 +110,7 @@ $userData = $service->toData($user, UserData::class);
 $activeUsers = User::where('status', 'active')->get();
 $usersData = $service->toDataCollection($activeUsers, UserData::class);
 
-$adminUsers = array_filter($usersData, fn($data) => $data->role === 'admin');
+$adminUsers = $usersData->filter(fn($data) => $data->role === 'admin');
 ```
 
 ---
@@ -201,7 +208,7 @@ final class UserData extends AbstractData
         public readonly string $name,
         public readonly string $email,
         public readonly ProfileData $profile,
-        public readonly array $posts,
+        public readonly DataCollection $posts,
     ) {}
 }
 
@@ -229,4 +236,6 @@ $usersData = $service->toDataCollection($users, UserData::class);
 
 - `AbstractData` - Classe de base pour les Data DTOs
 - `StrictDataObject` - Objet pour les données JSON/array
+- `DataCollection` - Collection typée pour Data DTOs
 - `PhpServiceServiceProvider` - Service Provider pour l'intégration Laravel
+```

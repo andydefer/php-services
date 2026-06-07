@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace AndyDefer\PhpServices\Contracts;
 
-use AndyDefer\DomainStructures\Abstracts\AbstractData;
+use AndyDefer\DomainStructures\Abstracts\AbstractRecord;
 use AndyDefer\DomainStructures\Abstracts\AbstractTypedCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
-interface ModelTransformableInterface
+interface RecordTransformableInterface
 {
     /**
-     * Convertit un modèle Eloquent en Data DTO.
+     * Convertit un modèle Eloquent en Record.
      *
-     * @template TData of AbstractData
+     * @template TRecord of AbstractRecord
      *
-     * @param  class-string<TData>  $dataClass
-     * @return TData
+     * @param  class-string<TRecord>  $recordClass
+     * @return TRecord
      */
-    public function toData(Model $model, string $dataClass): AbstractData;
+    public function toRecord(Model $model, string $recordClass): AbstractRecord;
 
     /**
      * Convertit une collection de modèles en collection typée.
@@ -30,7 +30,7 @@ interface ModelTransformableInterface
      * @param  class-string<TCollection>  $collectionClass
      * @return TCollection
      */
-    public function toDataCollection(
+    public function toRecordCollection(
         Collection $models,
         string $collectionClass
     ): AbstractTypedCollection;
