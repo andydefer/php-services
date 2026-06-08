@@ -21,8 +21,8 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0|^13.0|^14.0|^15.0",
-        "andydefer/php-vo": "^0.5.1",
-        "andydefer/domain-structures": "^1.16"
+        "andydefer/domain-structures": "^1.16",
+        "andydefer/php-vo": "^0.8.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b198cd1178c1f744aa678052a9ab3da",
+    "content-hash": "04abe3c72dc2af6cdd4fee755f8393a3",
     "packages": [
         {
             "name": "andydefer/domain-structures",
@@ -59,16 +59,16 @@
         },
         {
             "name": "andydefer/php-vo",
-            "version": "0.5.1",
+            "version": "0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/andydefer/php-vo.git",
-                "reference": "79c5157d403a6726eaec17cfa5d8d28861685125"
+                "reference": "b7175428f50261d1166decd4561206ee3137dcf5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/andydefer/php-vo/zipball/79c5157d403a6726eaec17cfa5d8d28861685125",
-                "reference": "79c5157d403a6726eaec17cfa5d8d28861685125",
+                "url": "https://api.github.com/repos/andydefer/php-vo/zipball/b7175428f50261d1166decd4561206ee3137dcf5",
+                "reference": "b7175428f50261d1166decd4561206ee3137dcf5",
                 "shasum": ""
             },
             "require": {
@@ -99,9 +99,9 @@
             "description": "A collection of reusable Value Objects and Enums for PHP applications (Email, Money, Address, PostalCode, Iso8601DateTime, Currency, etc.)",
             "support": {
                 "issues": "https://github.com/andydefer/php-vo/issues",
-                "source": "https://github.com/andydefer/php-vo/tree/0.5.1"
+                "source": "https://github.com/andydefer/php-vo/tree/0.8.0"
             },
-            "time": "2026-06-06T13:27:06+00:00"
+            "time": "2026-06-08T03:19:23+00:00"
         },
         {
             "name": "brick/math",
