@@ -5,7 +5,6 @@ composer.phar
 
 # PHPUnit
 .phpunit.cache/
-/.phpunit.cache
 *.cache
 coverage/
 *.coverage
