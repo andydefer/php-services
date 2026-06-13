@@ -2,5 +2,6 @@
 
 | Service | Description | Documentation |
 |---------|-------------|---------------|
-| ModelTransformableService | Conversion automatique des modèles Eloquent en Data DTOs typés avec gestion des casts (JSON, array, enum, datetime) et des relations | [ModelTransformableService](services/model-transformable-service.md) |
-| RecordTransformableService | Conversion automatique des modèles Eloquent en Records typés (snake_case) avec gestion des casts (JSON, array, enum, datetime) et des relations | [RecordTransformableService](services/record-transformable-service.md) |
+| FileSystemService | Opérations natives sur le système de fichiers (lecture, écriture, copie, déplacement, suppression) sans dépendances externes | [FileSystemService](services/filesystem-service.md) |
+| PrimitiveTypeConverterService | Conversion entre types primitifs PHP (bool, string, int, float, null) avec détection de type et valeurs par défaut | [PrimitiveTypeConverterService](services/primitive-type-converter-service.md) |
+---
