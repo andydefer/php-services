@@ -6,40 +6,117 @@ namespace AndyDefer\PhpServices\Services;
 
 use AndyDefer\DomainStructures\Abstracts\AbstractData;
 use AndyDefer\DomainStructures\Abstracts\AbstractTypedCollection;
-use AndyDefer\DomainStructures\Normalizers\NormalizerChain;
+use AndyDefer\DomainStructures\Services\HydrationService;
 use AndyDefer\DomainStructures\Utils\StrictDataObject;
 use AndyDefer\PhpServices\Contracts\ModelTransformableInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
+/**
+ * @deprecated Ce service est déprécié. Utilisez HydrationService du package domain-structures à la place.
+ *
+ * Ce service sera supprimé dans la version 1.0.0.
+ *
+ * ❌ À NE PLUS UTILISER :
+ * - ModelTransformableService::toData()
+ * - ModelTransformableService::toDataCollection()
+ *
+ * ✅ RECOMMANDATION :
+ * Utilisez HydrationService pour toutes les opérations d'hydratation :
+ *
+ * // Pour un seul modèle :
+ * $hydrationService = new HydrationService();
+ * $data = $hydrationService->hydrate(MyData::class, $model->toArray());
+ *
+ * // Pour une collection :
+ * $collection = $hydrationService->collect($models, MyCollection::class);
+ *
+ * // Depuis du JSON :
+ * $data = $hydrationService->hydrateFromJson(MyData::class, $jsonString);
+ * $collection = $hydrationService->collectFromJson($jsonString, MyCollection::class);
+ * @see HydrationService
+ * @deprecated
+ */
 final class ModelTransformableService implements ModelTransformableInterface
 {
+    private HydrationService $hydrationService;
+
+    public function __construct()
+    {
+        // @trigger_error(sprintf(
+        //     'L\'utilisation de %s est dépréciée. Utilisez %s à la place.',
+        //     __CLASS__,
+        //     HydrationService::class
+        // ), E_USER_DEPRECATED);
+
+        $this->hydrationService = new HydrationService;
+    }
+
+    /**
+     * @deprecated Utilisez HydrationService::hydrate() à la place
+     *
+     * Anciennement : Convertit un modèle Eloquent en Data object
+     *
+     * ✅ NOUVELLE APPROCHE :
+     * $data = $hydrationService->hydrate(MyData::class, $model->toArray());
+     */
     public function toData(Model $model, string $dataClass): AbstractData
     {
+        @trigger_error(
+            sprintf(
+                '%s::toData() est dépréciée. Utilisez %s::hydrate() avec $model->toArray() à la place.',
+                __CLASS__,
+                HydrationService::class
+            ),
+            E_USER_DEPRECATED
+        );
+
         $attributes = $this->extractAttributes($model);
         $relations = $this->extractRelations($model);
         $data = array_merge($attributes, $relations);
-        $normalized = NormalizerChain::get()->normalize($data);
 
-        return $dataClass::from($normalized);
+        // Recommandation d'utilisation du nouveau service
+        return $this->hydrationService->hydrate($dataClass, $data);
     }
 
+    /**
+     * @deprecated Utilisez HydrationService::collect() à la place
+     *
+     * Anciennement : Convertit une collection de modèles en TypedCollection
+     *
+     * ✅ NOUVELLE APPROCHE :
+     * $collection = $hydrationService->collect($models->toArray(), MyCollection::class);
+     */
     public function toDataCollection(
         Collection $models,
         string $collectionClass
     ): AbstractTypedCollection {
+        @trigger_error(
+            sprintf(
+                '%s::toDataCollection() est dépréciée. Utilisez %s::collect() avec $models->toArray() à la place.',
+                __CLASS__,
+                HydrationService::class
+            ),
+            E_USER_DEPRECATED
+        );
+
         $data = [];
 
         foreach ($models as $model) {
             $attributes = $this->extractAttributes($model);
             $relations = $this->extractRelations($model);
             $item = array_merge($attributes, $relations);
-            $data[] = NormalizerChain::get()->normalize($item);
+            $data[] = $item;
         }
 
-        return $collectionClass::collect($data);
+        // Recommandation d'utilisation du nouveau service
+        return $this->hydrationService->collect($data, $collectionClass);
     }
 
+    /**
+     * @deprecated Cette méthode privée sera supprimée
+     * Utilisez directement les méthodes de HydrationService
+     */
     private function extractAttributes(Model $model): array
     {
         $attributes = [];
@@ -51,6 +128,10 @@ final class ModelTransformableService implements ModelTransformableInterface
         return $attributes;
     }
 
+    /**
+     * @deprecated Cette méthode privée sera supprimée
+     * Utilisez directement les méthodes de HydrationService
+     */
     private function extractRelations(Model $model): array
     {
         $relations = [];
@@ -62,6 +143,9 @@ final class ModelTransformableService implements ModelTransformableInterface
         return $relations;
     }
 
+    /**
+     * @deprecated Cette méthode privée sera supprimée
+     */
     private function transformRelation(mixed $relationValue): mixed
     {
         if ($relationValue instanceof Collection) {
@@ -75,6 +159,10 @@ final class ModelTransformableService implements ModelTransformableInterface
         return $relationValue;
     }
 
+    /**
+     * @deprecated Cette méthode privée sera supprimée
+     * La transformation des valeurs sera gérée par le NormalizerChain d'HydrationService
+     */
     private function transformValue(Model $model, string $key, mixed $value): mixed
     {
         if ($value instanceof \DateTimeInterface) {
@@ -102,6 +190,9 @@ final class ModelTransformableService implements ModelTransformableInterface
         return $value;
     }
 
+    /**
+     * @deprecated Cette méthode privée sera supprimée
+     */
     private function guessDataClass(Model $model): string
     {
         $modelClass = get_class($model);
