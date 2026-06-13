@@ -26,7 +26,10 @@ final class PhpServiceServiceProvider extends ServiceProvider
             RecordTransformableService::class
         );
 
-        $this->app->singleton(PrimitiveTypeConverterInterface::class, PrimitiveTypeConverterService::class);
+        $this->app->singleton(
+            PrimitiveTypeConverterInterface::class,
+            PrimitiveTypeConverterService::class
+        );
     }
 
     public function boot(): void
