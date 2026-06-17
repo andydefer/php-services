@@ -51,13 +51,22 @@ class FileSystemService implements FileSystemInterface
     {
         $this->ensureDirectoryExists(dirname($path));
 
-        // ✅ Vérifier si le répertoire est accessible en écriture
+        // Vérifier si le répertoire est accessible en écriture
         $directory = dirname($path);
         if (! $this->isWritable($directory)) {
-            throw new \RuntimeException(sprintf('Cannot write file: %s - directory is not writable', $path));
+            throw new \RuntimeException(sprintf(
+                'Cannot write file: %s - directory is not writable',
+                $path
+            ));
         }
 
-        return file_put_contents($path, $content);
+        $result = @file_put_contents($path, $content);
+
+        if ($result === false) {
+            throw new \RuntimeException(sprintf('Cannot write file: %s', $path));
+        }
+
+        return $result;
     }
 
     /**
@@ -67,13 +76,22 @@ class FileSystemService implements FileSystemInterface
     {
         $this->ensureDirectoryExists(dirname($path));
 
-        // ✅ Vérifier si le répertoire est accessible en écriture
+        // Vérifier si le répertoire est accessible en écriture
         $directory = dirname($path);
         if (! $this->isWritable($directory)) {
-            throw new \RuntimeException(sprintf('Cannot append to file: %s - directory is not writable', $path));
+            throw new \RuntimeException(sprintf(
+                'Cannot append to file: %s - directory is not writable',
+                $path
+            ));
         }
 
-        return file_put_contents($path, $content, FILE_APPEND | LOCK_EX);
+        $result = @file_put_contents($path, $content, FILE_APPEND | LOCK_EX);
+
+        if ($result === false) {
+            throw new \RuntimeException(sprintf('Cannot append to file: %s', $path));
+        }
+
+        return $result;
     }
 
     /**
@@ -117,7 +135,7 @@ class FileSystemService implements FileSystemInterface
             return true;
         }
 
-        // ✅ Vérifier si le parent est accessible en écriture
+        // Vérifier si le parent est accessible en écriture
         if (! $recursive) {
             $parent = dirname($path);
             if (! $this->isDirectory($parent) || ! $this->isWritable($parent)) {
@@ -125,7 +143,7 @@ class FileSystemService implements FileSystemInterface
             }
         }
 
-        return mkdir($path, $mode->value(), $recursive);
+        return @mkdir($path, $mode->value(), $recursive);
     }
 
     /**
@@ -137,18 +155,24 @@ class FileSystemService implements FileSystemInterface
             return;
         }
 
-        // ✅ Vérifier si le parent existe et est accessible en écriture
+        // Vérifier si le parent existe et est accessible en écriture
         $parent = dirname($path);
 
-        // Si le parent n'existe pas, on vérifie récursivement
+        // Si le parent n'existe pas, on crée récursivement
         if (! $this->isDirectory($parent)) {
-            // Vérifier si on peut créer le parent
+            // Vérifier si le grand-parent est accessible en écriture
             $grandParent = dirname($parent);
-            if (! $this->isDirectory($grandParent) || ! $this->isWritable($grandParent)) {
-                throw new \RuntimeException(sprintf(
-                    'Cannot create directory: %s - parent directory does not exist or is not writable',
-                    $path
-                ));
+            if (! $this->isDirectory($grandParent)) {
+                // Essayer de créer le parent récursivement
+                if (! @mkdir($parent, 0755, true)) {
+                    // Vérifier si le parent a été créé par un autre processus
+                    if (! $this->isDirectory($parent)) {
+                        throw new \RuntimeException(sprintf(
+                            'Cannot create directory: %s - parent directory does not exist or is not writable',
+                            $path
+                        ));
+                    }
+                }
             }
         }
 
@@ -160,8 +184,12 @@ class FileSystemService implements FileSystemInterface
             ));
         }
 
-        if (! $this->makeDirectory($path, PermissionMode::DIRECTORY, true)) {
-            throw new \RuntimeException(sprintf('Cannot create directory: %s', $path));
+        // Créer le répertoire
+        if (! @mkdir($path, 0755, true)) {
+            // Vérifier si le répertoire a été créé par un autre processus
+            if (! $this->isDirectory($path)) {
+                throw new \RuntimeException(sprintf('Cannot create directory: %s', $path));
+            }
         }
     }
 
@@ -172,13 +200,16 @@ class FileSystemService implements FileSystemInterface
     {
         $this->ensureDirectoryExists(dirname($destination));
 
-        // ✅ Vérifier si le répertoire de destination est accessible en écriture
+        // Vérifier si le répertoire de destination est accessible en écriture
         $directory = dirname($destination);
         if (! $this->isWritable($directory)) {
-            throw new \RuntimeException(sprintf('Cannot copy file: %s - destination directory is not writable', $destination));
+            throw new \RuntimeException(sprintf(
+                'Cannot copy file: %s - destination directory is not writable',
+                $destination
+            ));
         }
 
-        return copy($source, $destination);
+        return @copy($source, $destination);
     }
 
     /**
@@ -188,13 +219,16 @@ class FileSystemService implements FileSystemInterface
     {
         $this->ensureDirectoryExists(dirname($destination));
 
-        // ✅ Vérifier si le répertoire de destination est accessible en écriture
+        // Vérifier si le répertoire de destination est accessible en écriture
         $directory = dirname($destination);
         if (! $this->isWritable($directory)) {
-            throw new \RuntimeException(sprintf('Cannot move file: %s - destination directory is not writable', $destination));
+            throw new \RuntimeException(sprintf(
+                'Cannot move file: %s - destination directory is not writable',
+                $destination
+            ));
         }
 
-        return rename($source, $destination);
+        return @rename($source, $destination);
     }
 
     /**
@@ -220,7 +254,7 @@ class FileSystemService implements FileSystemInterface
             return $this->deleteDirectory($path);
         }
 
-        return unlink($path);
+        return @unlink($path);
     }
 
     /**
@@ -238,11 +272,11 @@ class FileSystemService implements FileSystemInterface
             if ($this->isDirectory($file)) {
                 $this->deleteDirectory($file);
             } else {
-                unlink($file);
+                @unlink($file);
             }
         }
 
-        return rmdir($directory);
+        return @rmdir($directory);
     }
 
     /**
