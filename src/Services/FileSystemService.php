@@ -155,39 +155,14 @@ class FileSystemService implements FileSystemInterface
             return;
         }
 
-        // Vérifier si le parent existe et est accessible en écriture
-        $parent = dirname($path);
+        // Création récursive directe sans vérification stricte des permissions
+        // Cela permet de créer des dossiers dans /tmp même si les permissions sont restrictives
+        $result = @mkdir($path, 0755, true);
 
-        // Si le parent n'existe pas, on crée récursivement
-        if (! $this->isDirectory($parent)) {
-            // Vérifier si le grand-parent est accessible en écriture
-            $grandParent = dirname($parent);
-            if (! $this->isDirectory($grandParent)) {
-                // Essayer de créer le parent récursivement
-                if (! @mkdir($parent, 0755, true)) {
-                    // Vérifier si le parent a été créé par un autre processus
-                    if (! $this->isDirectory($parent)) {
-                        throw new \RuntimeException(sprintf(
-                            'Cannot create directory: %s - parent directory does not exist or is not writable',
-                            $path
-                        ));
-                    }
-                }
-            }
-        }
-
-        // Vérifier si le parent est accessible en écriture
-        if (! $this->isWritable($parent)) {
-            throw new \RuntimeException(sprintf(
-                'Cannot create directory: %s - parent directory is not writable',
-                $path
-            ));
-        }
-
-        // Créer le répertoire
-        if (! @mkdir($path, 0755, true)) {
-            // Vérifier si le répertoire a été créé par un autre processus
-            if (! $this->isDirectory($path)) {
+        if ($result === false && ! $this->isDirectory($path)) {
+            // Tenter une création avec des permissions plus permissives
+            $result = @mkdir($path, 0777, true);
+            if ($result === false && ! $this->isDirectory($path)) {
                 throw new \RuntimeException(sprintf('Cannot create directory: %s', $path));
             }
         }

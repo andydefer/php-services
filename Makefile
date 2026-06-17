@@ -65,9 +65,8 @@ git-reset-hard: ## Réinitialise complètement le repo au dernier commit (⚠️
 
 .PHONY: git-tag
 git-tag: ## Create and push a new version tag (major/minor/patch)
-	@bash -c '\
-	read -p "Tag type (major/minor/patch): " tag_type; \
-	last_tag=$$(git tag --sort=-v:refname | head -n 1); \
+	@read -p "Tag type (major/minor/patch): " tag_type; \
+	last_tag=$$(git tag -l | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$$' | sed 's/^v//' | sort -V | tail -n 1); \
 	if [ -z "$$last_tag" ]; then last_tag="0.0.0"; fi; \
 	major=$$(echo $$last_tag | cut -d. -f1); \
 	minor=$$(echo $$last_tag | cut -d. -f2); \
@@ -78,11 +77,10 @@ git-tag: ## Create and push a new version tag (major/minor/patch)
 		patch) patch=$$((patch + 1));; \
 		*) echo "❌ Invalid tag type: $$tag_type"; exit 1;; \
 	esac; \
-	new_tag="$$major.$$minor.$$patch"; \
+	new_tag="v$$major.$$minor.$$patch"; \
 	git tag -a "$$new_tag" -m "Release $$new_tag"; \
 	git push origin "$$new_tag"; \
-	echo "✅ Released new tag: $$new_tag"; \
-	'
+	echo "✅ Released new tag: $$new_tag"'
 
 .PHONY: git-tag-republish
 git-tag-republish: ## Force push the last tag
