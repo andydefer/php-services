@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6863987059cb173a5b20c22ef427f287",
+    "content-hash": "0103af7d2d241c908275835579529c88",
     "packages": [
         {
             "name": "andydefer/domain-structures",
-            "version": "v1.18.1",
+            "version": "v1.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/andydefer/domain-structures.git",
-                "reference": "4433cfa161e84eb94fe163168ae95492d1511b63"
+                "reference": "b45be9a780cd3642be16ef610c3dc6522a8002a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/andydefer/domain-structures/zipball/4433cfa161e84eb94fe163168ae95492d1511b63",
-                "reference": "4433cfa161e84eb94fe163168ae95492d1511b63",
+                "url": "https://api.github.com/repos/andydefer/domain-structures/zipball/b45be9a780cd3642be16ef610c3dc6522a8002a4",
+                "reference": "b45be9a780cd3642be16ef610c3dc6522a8002a4",
                 "shasum": ""
             },
             "require": {
@@ -53,29 +53,30 @@
             "description": "A complete domain structures package for PHP: Records, Value Objects, Data DTOs, and TypedCollections. Brings type safety and clean architecture to your application.",
             "support": {
                 "issues": "https://github.com/andydefer/domain-structures/issues",
-                "source": "https://github.com/andydefer/domain-structures/tree/v1.18.1"
+                "source": "https://github.com/andydefer/domain-structures/tree/v1.21.0"
             },
-            "time": "2026-06-09T10:58:02+00:00"
+            "time": "2026-06-25T06:24:29+00:00"
         },
         {
             "name": "andydefer/php-vo",
-            "version": "v0.9.0",
+            "version": "v0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/andydefer/php-vo.git",
-                "reference": "9556d9814a4fff2763a2a9f9dc544caabd84f213"
+                "reference": "6b47136c0312531f8b1c1e630892f91deafc2c6d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/andydefer/php-vo/zipball/9556d9814a4fff2763a2a9f9dc544caabd84f213",
-                "reference": "9556d9814a4fff2763a2a9f9dc544caabd84f213",
+                "url": "https://api.github.com/repos/andydefer/php-vo/zipball/6b47136c0312531f8b1c1e630892f91deafc2c6d",
+                "reference": "6b47136c0312531f8b1c1e630892f91deafc2c6d",
                 "shasum": ""
             },
             "require": {
-                "andydefer/domain-structures": "^1.18.1",
+                "andydefer/domain-structures": "^1.21",
                 "php": ">=8.1"
             },
             "require-dev": {
+                "laravel/pint": "^1.29",
                 "mockery/mockery": "^1.6",
                 "orchestra/testbench": "^9.0|^10.0",
                 "phpunit/phpunit": "^10.5|^11.0|^12.0"
@@ -99,9 +100,9 @@
             "description": "A collection of reusable Value Objects and Enums for PHP applications (Email, Money, Address, PostalCode, Iso8601DateTime, Currency, etc.)",
             "support": {
                 "issues": "https://github.com/andydefer/php-vo/issues",
-                "source": "https://github.com/andydefer/php-vo/tree/v0.9.0"
+                "source": "https://github.com/andydefer/php-vo/tree/v0.10.0"
             },
-            "time": "2026-06-16T08:09:08+00:00"
+            "time": "2026-06-25T11:22:27+00:00"
         }
     ],
     "packages-dev": [
