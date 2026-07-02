@@ -28,7 +28,8 @@
         "rector/rector": "*",
         "vimeo/psalm": "^6.14",
         "mockery/mockery": "^1.6",
-        "laravel/pint": "^1.29"
+        "laravel/pint": "^1.29",
+        "symfony/var-dumper": "^8.1"
     },
     "scripts": {
         "test": "phpunit",
