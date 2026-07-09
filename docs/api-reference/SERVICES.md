@@ -8,3 +8,4 @@
 | UniqueExtractorService | Extraction des lettres uniques et mots uniques d'un texte avec ou sans normalisation, recherche par préfixe et analyse de fréquence | [UniqueExtractorService](services/unique-extractor-service.md) |
 | NGramGeneratorService | Génération de n-grammes (bigrammes, trigrammes, quadrigrammes, etc.) avec plage de tailles configurable et support de normalisation | [NGramGeneratorService](services/ngram-generator-service.md) |
 | WordVectorGeneratorService | Génération de vecteurs numériques pour les mots via hachage de n-grammes, avec calcul de similarité cosinus entre vecteurs | [WordVectorGeneratorService](services/word-vector-generator-service.md) |
+| SimilarityCalculatorService | Calcul de similarité entre deux textes combinant analyse lexicale (n-grammes) et phonétique (métaphone) avec poids configurables | [SimilarityCalculatorService](services/similarity-calculator-service.md) |
