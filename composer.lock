@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e25843746180f3ce07beef0ce2c5241f",
+    "content-hash": "4757aa642875dfc8d8edd95acd6539a5",
     "packages": [
         {
             "name": "andydefer/domain-structures",
@@ -59,20 +59,20 @@
         },
         {
             "name": "andydefer/php-vo",
-            "version": "v0.12.0",
+            "version": "v0.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/andydefer/php-vo.git",
-                "reference": "a33a3876cc4d5e028725d64d531f9fe85ab03506"
+                "reference": "782b40c101e3a978ba236b9642ec548100cd440b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/andydefer/php-vo/zipball/a33a3876cc4d5e028725d64d531f9fe85ab03506",
-                "reference": "a33a3876cc4d5e028725d64d531f9fe85ab03506",
+                "url": "https://api.github.com/repos/andydefer/php-vo/zipball/782b40c101e3a978ba236b9642ec548100cd440b",
+                "reference": "782b40c101e3a978ba236b9642ec548100cd440b",
                 "shasum": ""
             },
             "require": {
-                "andydefer/domain-structures": "^1.21.0",
+                "andydefer/domain-structures": "^1.21.1",
                 "php": ">=8.1"
             },
             "require-dev": {
@@ -100,9 +100,9 @@
             "description": "A collection of reusable Value Objects and Enums for PHP applications (Email, Money, Address, PostalCode, Iso8601DateTime, Currency, etc.)",
             "support": {
                 "issues": "https://github.com/andydefer/php-vo/issues",
-                "source": "https://github.com/andydefer/php-vo/tree/v0.12.0"
+                "source": "https://github.com/andydefer/php-vo/tree/v0.13.1"
             },
-            "time": "2026-07-07T02:26:38+00:00"
+            "time": "2026-07-09T14:51:33+00:00"
         }
     ],
     "packages-dev": [
