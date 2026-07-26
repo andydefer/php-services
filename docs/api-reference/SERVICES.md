@@ -9,3 +9,4 @@
 | NGramGeneratorService | Génération de n-grammes (bigrammes, trigrammes, quadrigrammes, etc.) avec plage de tailles configurable et support de normalisation | [NGramGeneratorService](services/ngram-generator-service.md) |
 | WordVectorGeneratorService | Génération de vecteurs numériques pour les mots via hachage de n-grammes, avec calcul de similarité cosinus entre vecteurs | [WordVectorGeneratorService](services/word-vector-generator-service.md) |
 | SimilarityCalculatorService | Calcul de similarité entre deux textes combinant analyse lexicale (n-grammes) et phonétique (métaphone) avec poids configurables | [SimilarityCalculatorService](services/similarity-calculator-service.md) |
+| IpGeolocationService | Géolocalisation d'adresses IP via l'API ip-api.com avec validation, gestion d'erreurs et données structurées (pays, ville, FAI, coordonnées, fuseau horaire)** | [IpGeolocationService](services/ip-geolocation-service.md)** |
