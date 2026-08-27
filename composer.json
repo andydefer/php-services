@@ -20,8 +20,8 @@
     ],
     "require": {
         "php": "^8.2",
-        "andydefer/php-vo": "^0.20.3",
-        "andydefer/php-client": "^0.6.6"
+        "andydefer/php-vo": "^0.20.4",
+        "andydefer/php-client": "^0.6.7"
     },
     "require-dev": {
         "composer/composer": "^2.0",
