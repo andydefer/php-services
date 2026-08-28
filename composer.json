@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "andydefer/php-vo": "^0.20.4",
+        "andydefer/php-vo": "^0.20.5",
         "andydefer/php-client": "^0.6.7"
     },
     "require-dev": {
